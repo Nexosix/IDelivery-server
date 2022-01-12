@@ -11,7 +11,23 @@ datasource db {
 }
 
 model Client {
-  id          Int       @id @default(autoincrement())
-  name        String
-  lastname    String
+  id              Int       @id @default(autoincrement())
+  uuid            String    @unique
+  email           String    @unique
+  name            String
+  lastname        String
+  hash            String
+  address         Address?
+}
+
+model Address {
+  id              Int       @id @default(autoincrement())
+  country         String
+  city            String
+  street          String
+  flatNumber      String
+  apartmentNumber String?
+  postCode        String
+  client          Client    @relation(fields: [clientId], references: [id])
+  clientId        Int
 }
