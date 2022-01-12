@@ -31,3 +31,14 @@ model Address {
   client          Client    @relation(fields: [clientId], references: [id])
   clientId        Int
 }
+
+model Courier {
+  id              Int       @id @default(autoincrement())
+  uuid            String    @unique
+  email           String    @unique
+  name            String
+  lastname        String
+  hash            String
+  active          Int
+  expireDate      DateTime?
+}
