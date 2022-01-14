@@ -9,10 +9,25 @@ module.exports = async (req, res, next) => {
     }
 
     const token = req.headers.authorization.split(" ")[1];
-    const user = jwt.verify(token, process.env.SECRET_TOKEN);
+    let user = null;
     
+    jwt.verify(token, process.env.SECRET_TOKEN, (err, payload) => {
+        if(err) {
+            console.log(err);
+            return;
+        }
+
+        user = payload;
+    });
+    
+    if(!user) {
+        res.status(401).send("Unathorized");
+        return;
+    }
+
     req.body.user = {
         uuid: user.uuid
     };
+
     next();
 }
