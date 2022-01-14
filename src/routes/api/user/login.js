@@ -1,5 +1,8 @@
-const prisma = require("../../../../services/prismaClient");
+const prisma = require("../../../services/prismaClient");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+require('dotenv').config();
 
 module.exports = async (req, res) => {
 
@@ -12,29 +15,54 @@ module.exports = async (req, res) => {
     const plainPassword = req.body.password;
 
     try {
-        const storedUser = await prisma.client.findFirst({
+        let storedUser = await prisma.client.findFirst({
             where: {
                 email: email
             },
             select: {
+                uuid: true,
                 hash: true
             }
         });
 
+        let accountType = null;
         if(!storedUser) {
-            res.status(401).send("Invalid credentials");
-            return;
+
+            storedUser = await prisma.courier.findFirst({
+                where: {
+                    email: email
+                },
+                select: {
+                    hash: true
+                }
+            });
+    
+            if(storedUser) {
+                accountType = "courier";
+            } else {
+                res.status(401).send("Invalid credentials");
+                return;
+            }
+        } else {
+            accountType = "client";
         }
 
         const match = await bcrypt.compare(plainPassword, storedUser.hash);
 
-        if(match) {
-            res.send("Logged in");
-            return;
-        } else {
+        if(!match) {
             res.status(401).send("Invalid credentials");
             return;
         }
+
+        const accessToken = jwt.sign({ uuid: storedUser.uuid }, process.env.SECRET_TOKEN);
+        const refreshToken = jwt.sign({ uuid: storedUser.uuid }, process.env.SECRET_REFRESH_TOKEN);
+
+        res.json({
+            accountType: accountType,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        });
+        return;
 
     } catch(e) {
         console.log(e);
