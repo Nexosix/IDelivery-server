@@ -26,7 +26,8 @@ module.exports = async (req, res, next) => {
     }
 
     req.body.user = {
-        uuid: user.uuid
+        uuid: user.uuid,
+        role: user.role
     };
 
     next();

@@ -54,8 +54,8 @@ module.exports = async (req, res) => {
             return;
         }
 
-        const accessToken = jwt.sign({ uuid: storedUser.uuid }, process.env.SECRET_TOKEN);
-        const refreshToken = jwt.sign({ uuid: storedUser.uuid }, process.env.SECRET_REFRESH_TOKEN);
+        const accessToken = jwt.sign({ uuid: storedUser.uuid, role: accountType }, process.env.SECRET_TOKEN);
+        const refreshToken = jwt.sign({ uuid: storedUser.uuid, role: accountType }, process.env.SECRET_REFRESH_TOKEN);
 
         res.json({
             accountType: accountType,
