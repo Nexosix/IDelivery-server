@@ -11,34 +11,78 @@ datasource db {
 }
 
 model Client {
-  id              Int       @id @default(autoincrement())
-  uuid            String    @unique
-  email           String    @unique
+  id              Int         @id @default(autoincrement())
+  uuid            String      @unique
+  email           String      @unique
   name            String
   lastname        String
   hash            String
   address         Address?
+  packages        PackageHistory[]
 }
 
 model Address {
-  id              Int       @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   country         String
   city            String
   street          String
   flatNumber      String
   apartmentNumber String?
   postCode        String
-  client          Client    @relation(fields: [clientId], references: [id])
-  clientId        Int
+  client          Client?     @relation(fields: [clientId], references: [id])
+  clientId        Int?
+  location        Location?
+  packagesFrom    Package[]   @relation("packagesFrom")
+  packagesTo      Package[]   @relation("packagesTo")
 }
 
 model Courier {
-  id              Int       @id @default(autoincrement())
-  uuid            String    @unique
-  email           String    @unique
+  id              Int         @id @default(autoincrement())
+  uuid            String      @unique
+  email           String      @unique
   name            String
   lastname        String
   hash            String
   active          Int
   expireDate      DateTime?
+  packages        PackageHistory[]
+}
+
+model Package {
+  id              Int         @id @default(autoincrement())
+  uuid            Int         @unique
+  addressFrom     Address     @relation("packagesFrom", fields: [addressFromId], references: [id])
+  addressFromId   Int
+  addressTo       Address     @relation("packagesTo", fields: [addressToId], references: [id])
+  addressToId     Int
+  price           Float
+  weight          Float
+  distance        Float
+  accessCode      String?
+  description     String?
+  currentLocation Location?
+  activity        PackageHistory?
+}
+
+model PackageHistory {
+  id              Int         @id @default(autoincrement())
+  package         Package     @relation(fields: [packageId], references: [id])
+  packageId       Int
+  client          Client      @relation(fields: [clientId], references: [id])
+  clientId        Int
+  courier         Courier?    @relation(fields: [courierId], references: [id])
+  courierId       Int?
+  startDate       DateTime
+  endDate         DateTime?
+  status          String
+}
+
+model Location {
+  id              Int         @id @default(autoincrement())
+  lat             Float
+  long            Float
+  address         Address     @relation(fields: [addressId], references: [id])
+  addressId       Int
+  packageLocation Package     @relation(fields: [packageLocationId], references: [id])
+  packageLocationId Int
 }
