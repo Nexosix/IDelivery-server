@@ -35,12 +35,13 @@ module.exports = async (req, res) => {
                     },
                     price: true,
                     weight: true,
+                    distance: true,
                 }
             },
             status: true
         }
     });
-
+    
     res.json(packages);
     return;
 }
