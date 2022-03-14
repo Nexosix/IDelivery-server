@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
             }
         });
 
-        const clientId = await prisma.client.findOne({
+        const client = await prisma.client.findFirst({
             where: {
                 uuid: clientUuid
             },
@@ -75,14 +75,19 @@ module.exports = async (req, res) => {
             }
         });
 
-        const startDate = new Date().toJSON();
+        if (client === null) {
+            res.sendStatus(401);
+            return;
+        }
+
+        const startDate = new Date();
 
         await prisma.packageHistory.create({
             data: {
                 packageId: package.id,
-                clientId: clientId,
+                clientId: client.id,
                 startDate: startDate,
-                status: "ongoing"
+                status: "awaiting"
             }
         });
 
