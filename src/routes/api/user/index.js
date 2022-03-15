@@ -8,6 +8,7 @@ const info = require("./info.js");
 const addPackage = require("./addPackage.js");
 const removePackage = require("./removePackage.js");
 const updateStatus = require("./updateStatus.js");
+const getPackages = require("./getPackages.js");
 const auth = require("../../../services/auth.js");
 
 
@@ -21,6 +22,7 @@ router.post('/client-errands', auth, addPackage);
 
 router.get('/client-errands', auth, clientErrands);
 router.get('/client-history', auth, clientHistory);
+router.get('/packages', auth, getPackages)
 
 router.patch('/update-status/:packageUuid', auth, updateStatus);
 

@@ -49,24 +49,45 @@ module.exports = async (req, res) => {
         )
         
         let dataToUpdate = null;
-        switch(packageHistory.status) {
-            case "awaiting":
-                if (userRole === 'courier'){
+
+        if (userRole === 'courier'){
+            switch(packageHistory.status) {
+                case "awaiting":
                     dataToUpdate = {
                         "courierId": courier.id,
                         "status": "reserved"
                     }
-                }
-                break;
-            
-            default:
-                res.sendStatus(400)
-                break;
+                    break;
+                
+                case "reserved":
+                    dataToUpdate = {
+                        "status": "ongoing"
+                    }
+                    break;
+
+                case "ongoing":
+                    dataToUpdate = {
+                        "status": "delivered"
+                    }
+                    break;
+                
+                default:
+                    res.sendStatus(400);
+                    break;
+            }
+        } else if(userRole === 'client'){
+            if (packageHistory.status !== 'delivered'){
+                res.sendStatus(400);
+                return;
+            }
+            dataToUpdate = {
+                "status": "received"
+            }
         }
 
         await prisma.packageHistory.update(
             {
-                data: dataToUpdate,
+                data: dataToUpdate || undefined,
                 where: {
                     id: packageHistory.id
                 }
