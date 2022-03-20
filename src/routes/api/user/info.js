@@ -11,6 +11,7 @@ module.exports = async (req, res, next) => {
             select: {
                 name: true,
                 lastname: true,
+                address: true
             }
         });
     } else if(req.body.user.role === "courier") {
