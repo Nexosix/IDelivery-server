@@ -50,7 +50,7 @@ model Courier {
 
 model Package {
   id              Int         @id @default(autoincrement())
-  uuid            Int         @unique
+  uuid            String         @unique
   addressFrom     Address     @relation("packagesFrom", fields: [addressFromId], references: [id])
   addressFromId   Int
   addressTo       Address     @relation("packagesTo", fields: [addressToId], references: [id])

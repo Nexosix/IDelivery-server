@@ -9,6 +9,12 @@ module.exports = async (req, res, next) => {
     }
 
     const token = req.headers.authorization.split(" ")[1];
+
+    if(token === "") {
+        res.status(401).send("No authorization token");
+        return;
+    }
+
     let user = null;
     
     jwt.verify(token, process.env.SECRET_TOKEN, (err, payload) => {
