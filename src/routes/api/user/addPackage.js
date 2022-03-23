@@ -1,4 +1,5 @@
 const prisma = require("../../../services/prismaClient");
+const geoapi = require("../../../services/geoapi");
 const customAlphabet = require("nanoid").customAlphabet;
 
 const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 24)
@@ -24,6 +25,7 @@ module.exports = async (req, res) => {
         res.sendStatus(400);
         return;
     }
+
     if(addressTo.country === undefined || addressTo.city === undefined || addressTo.street === undefined || addressTo.flatNumber === undefined || addressTo.postCode === undefined) {
         res.sendStatus(400);
         return;
@@ -32,6 +34,12 @@ module.exports = async (req, res) => {
     const uuid = nanoid();
 
     try{
+
+        const coordsFrom = await geoapi.getCoordsByAddress(addressFrom);
+        const coordsTo = await geoapi.getCoordsByAddress(addressTo);
+
+        const calculatedDistance = await geoapi.getDistance(coordsFrom, coordsTo)
+
         const package = await prisma.package.create({
             data: {
                 uuid: uuid,
@@ -42,7 +50,13 @@ module.exports = async (req, res) => {
                         street: addressFrom.street,
                         flatNumber: addressFrom.flatNumber,
                         apartmentNumber: addressFrom.apartmentNumber,
-                        postCode: addressFrom.postCode
+                        postCode: addressFrom.postCode,
+                        location: {
+                            create: {
+                                lat: coordsFrom.lat,
+                                lon: coordsFrom.lon
+                            }
+                        }
                     }
                 },
                 addressTo: {
@@ -52,12 +66,18 @@ module.exports = async (req, res) => {
                         street: addressTo.street,
                         flatNumber: addressTo.flatNumber,
                         apartmentNumber: addressTo.apartmentNumber,
-                        postCode: addressTo.postCode
+                        postCode: addressTo.postCode,
+                        location: {
+                            create: {
+                                lat: coordsTo.lat,
+                                lon: coordsTo.lon
+                            }
+                        }
                     }
                 },
                 price: price,
                 weight: weight,
-                distance: distance,
+                distance: calculatedDistance,
                 accessCode: accessCode,
                 description: description
             },

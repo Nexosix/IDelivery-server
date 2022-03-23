@@ -1,8 +1,8 @@
 const prisma = require("../../../services/prismaClient.js");
+const geoapi = require("../../../services/geoapi");
 const customAlphabet = require("nanoid").customAlphabet;
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
-const fetch = require("node-fetch");
 
 dotenv.config()
 
@@ -47,27 +47,12 @@ module.exports = async (req, res) => {
     const uuid = nanoid();
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
-    const hash = await bcrypt.hash(password, salt);
-
-
-    //get coords from geo api
-    let lat, lon;
-    
-    let url = `https://api.geoapify.com/v1/geocode/search?text=${address.street} ${address.flatNumber} ${address.postCode} ${address.city} ${address.country}&apiKey=${process.env.GEO_API_KEY}`
-    
-    await fetch(url, { method: "GET" })
-        .then(response => response.json())
-        .then(data => {
-            lat = data.features[0].properties.lat;
-            lon = data.features[0].properties.lon;
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-            return;
-        })
+    const hash = await bcrypt.hash(password, salt);    
 
     try {
+
+        const coords = await geoapi.getCoordsByAddress(address); 
+
         await prisma.client.create({
             data: {
                 uuid: uuid,
@@ -84,8 +69,8 @@ module.exports = async (req, res) => {
                         postCode: address.postCode,
                         location: {
                             create: {
-                                lat: lat,
-                                lon: lon
+                                lat: coords.lat,
+                                lon: coords.lon
                             }
                         }
                     }
