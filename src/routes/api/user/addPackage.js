@@ -6,7 +6,7 @@ const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvw
 
 module.exports = async (req, res) => {
 
-    if(req.body.addressFrom === undefined || req.body.addressTo === undefined || req.body.price === undefined || req.body.weight === undefined || req.body.distance === undefined){
+    if(req.body.addressFrom === undefined || req.body.addressTo === undefined || req.body.price === undefined || req.body.weight === undefined){
         res.sendStatus(400);
         return;
     }
