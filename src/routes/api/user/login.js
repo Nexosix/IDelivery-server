@@ -33,6 +33,7 @@ module.exports = async (req, res) => {
                     email: email
                 },
                 select: {
+                    uuid: true,
                     hash: true
                 }
             });

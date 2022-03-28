@@ -34,7 +34,8 @@ module.exports = async (req, res, next) => {
     res.json({
         role: req.body.user.role,
         name: user.name,
-        lastname: user.lastname
+        lastname: user.lastname,
+        address: user.address ? user.address : null,
     });
     return;
 }
