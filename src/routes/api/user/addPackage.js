@@ -15,7 +15,6 @@ module.exports = async (req, res) => {
     const addressTo = req.body.addressTo;
     const price = req.body.price;
     const weight = req.body.weight;
-    const distance = req.body.distance;
     const accessCode = req.body.accessCode;
     const description = req.body.description;
 
@@ -31,14 +30,36 @@ module.exports = async (req, res) => {
         return;
     }
 
+    let coordsFrom, coordsTo, calculatedDistance;
+
+    try {
+        coordsFrom = await geoapi.getCoordsByAddress(addressFrom);
+
+        if(coordsFrom == null) {
+            throw new Error('Address not found');
+        }
+
+        coordsTo = await geoapi.getCoordsByAddress(addressTo);
+    
+        if(coordsTo == null) {
+            throw new Error('Address not found');
+        }
+
+        calculatedDistance = await geoapi.getDistance(coordsFrom, coordsTo);
+
+        if(calculatedDistance === null) {
+            throw new Error(`Could not calculate distance`);
+        }
+    
+    } catch(e) {
+        console.log(e);
+        res.status(400).send(e.message);
+        return;
+    }
+
     const uuid = nanoid();
-
+    
     try{
-
-        const coordsFrom = await geoapi.getCoordsByAddress(addressFrom);
-        const coordsTo = await geoapi.getCoordsByAddress(addressTo);
-
-        const calculatedDistance = await geoapi.getDistance(coordsFrom, coordsTo)
 
         const package = await prisma.package.create({
             data: {

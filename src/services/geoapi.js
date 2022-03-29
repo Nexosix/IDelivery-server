@@ -1,4 +1,7 @@
 const fetch = require("node-fetch");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const getCoordsByAddress = async (address) => {
 
@@ -11,6 +14,11 @@ const getCoordsByAddress = async (address) => {
     }
     
     const data = await response.json();
+
+    if(data.features[0] == undefined) {
+        return null;
+    }
+
     const lat = parseFloat(data.features[0].properties.lat);
     const lon = parseFloat(data.features[0].properties.lon);
 
@@ -46,6 +54,11 @@ const getDistance = async (coordsFrom, coordsTo) => {
     }
 
     const data = await response.json();
+
+    if(data.sources_to_targets[0][0].distance == null) {
+        return null;
+    }
+
     return parseInt(data.sources_to_targets[0][0].distance);
 }
 

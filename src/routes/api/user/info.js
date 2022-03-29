@@ -11,7 +11,16 @@ module.exports = async (req, res, next) => {
             select: {
                 name: true,
                 lastname: true,
-                address: true
+                address: {
+                    select: {
+                        country: true,
+                        city: true,
+                        street: true,
+                        flatNumber: true,
+                        apartmentNumber: true,
+                        postCode: true
+                    }
+                }
             }
         });
     } else if(req.body.user.role === "courier") {

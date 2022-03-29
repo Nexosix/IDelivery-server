@@ -47,11 +47,24 @@ module.exports = async (req, res) => {
     const uuid = nanoid();
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
-    const hash = await bcrypt.hash(password, salt);    
+    const hash = await bcrypt.hash(password, salt);
+
+    let coords;
 
     try {
+        coords = await geoapi.getCoordsByAddress(address);
 
-        const coords = await geoapi.getCoordsByAddress(address); 
+        if(coords == null) {
+            throw new Error(`Bad address`);
+        } 
+
+    } catch(e) {
+        console.log(e);
+        res.status(400).send(e.message);
+        return;
+    }
+
+    try { 
 
         await prisma.client.create({
             data: {
