@@ -50,6 +50,12 @@ module.exports = async (req, res) => {
                                 flatNumber: true,
                                 apartmentNumber: true,
                                 postCode: true,
+                                location: {
+                                    select: {
+                                        lat: true,
+                                        lon: true
+                                    }
+                                }
                             }
                             
                         },
@@ -61,6 +67,12 @@ module.exports = async (req, res) => {
                                 flatNumber: true,
                                 apartmentNumber: true,
                                 postCode: true,
+                                location: {
+                                    select: {
+                                        lat: true,
+                                        lon: true
+                                    }
+                                }
                             } 
                         },
                         price: true,
