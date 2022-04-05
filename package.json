@@ -1,6 +1,9 @@
 {
   "name": "idelivery-server",
   "version": "1.0.0",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "description": "",
   "main": "src/server.js",
   "scripts": {
