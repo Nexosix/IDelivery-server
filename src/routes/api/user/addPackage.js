@@ -1,5 +1,5 @@
 const prisma = require("../../../services/prismaClient");
-const geoapi = require("../../../services/geoapi");
+const geoapi = require("../../../services/locationIQ");
 const customAlphabet = require("nanoid").customAlphabet;
 
 const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 24)
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
             throw new Error('Address not found');
         }
 
-        calculatedDistance = await geoapi.getDistance(coordsFrom, coordsTo);
+        calculatedDistance = await geoapi.getDistance(coordsFrom, coordsTo, delay=true);
 
         if(calculatedDistance === null) {
             throw new Error(`Could not calculate distance`);
