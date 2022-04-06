@@ -1,5 +1,5 @@
 const prisma = require("../../../services/prismaClient.js");
-const geoapi = require("../../../services/geoapi");
+const geoapi = require("../../../services/locationIQ");
 const customAlphabet = require("nanoid").customAlphabet;
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
